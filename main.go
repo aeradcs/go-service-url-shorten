@@ -1,14 +1,14 @@
 package main
 
 import (
-	"net/http"
-	"io"
-	"database/sql"
-	_ "github.com/lib/pq"
-	"strings"
-	"fmt"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/base64"
+	"fmt"
+	_ "github.com/lib/pq"
+	"io"
+	"net/http"
+	"strings"
 )
 
 func generateShortKey(input string) string {
@@ -16,7 +16,7 @@ func generateShortKey(input string) string {
 	hash.Write([]byte(input))
 	hashBytes := hash.Sum(nil)
 	hashString := base64.URLEncoding.EncodeToString(hashBytes)
-	shortKey := hashString[:7]
+	shortKey := hashString[len(hashString)-7:]
 	return shortKey
 }
 
@@ -36,7 +36,7 @@ func postReduceUrl(w http.ResponseWriter, req *http.Request) {
 	urlShort := getShortUrlFromDb(urlOriginal)
 	if urlShort == "" {
 		shortKey := generateShortKey(urlOriginal)
-		urlShort =	insertUrlInDb(urlOriginal, shortKey)
+		urlShort = insertUrlInDb(urlOriginal, shortKey)
 	}
 	resp := generateResponse(urlOriginal, urlShort)
 	w.Write(resp)
