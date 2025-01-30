@@ -5,21 +5,19 @@ import (
 	"io"
 	"database/sql"
 	_ "github.com/lib/pq"
-	"math/rand"
-    "time"
 	"strings"
+	"fmt"
+	"crypto/sha256"
+	"encoding/base64"
 )
 
-func generateShortKey() string {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    const keyLength = 10
-
-    rand.Seed(time.Now().UnixNano())
-    shortKey := make([]byte, keyLength)
-    for i := range shortKey {
-        shortKey[i] = charset[rand.Intn(len(charset))]
-    }
-    return string(shortKey)
+func generateShortKey(input string) string {
+	hash := sha256.New()
+	hash.Write([]byte(input))
+	hashBytes := hash.Sum(nil)
+	hashString := base64.URLEncoding.EncodeToString(hashBytes)
+	shortKey := hashString[:7]
+	return shortKey
 }
 
 func postReduceUrl(w http.ResponseWriter, req *http.Request) {
@@ -37,7 +35,7 @@ func postReduceUrl(w http.ResponseWriter, req *http.Request) {
 	urlOriginal := string(body)
 	urlShort := getShortUrlFromDb(urlOriginal)
 	if urlShort == "" {
-		shortKey := generateShortKey()
+		shortKey := generateShortKey(urlOriginal)
 		urlShort =	insertUrlInDb(urlOriginal, shortKey)
 	}
 	resp := generateResponse(urlOriginal, urlShort)
@@ -87,6 +85,9 @@ func insertUrlInDb(original string, shortKey string) string {
 
 	rows, err := db.Query(insertQueryStr)
 	if err != nil {
+		if strings.Contains(err.Error(), "pq: duplicate key value violates unique constraint") {
+			fmt.Println("Duplicate key error detected!")
+		}
 		panic(err)
 	}
 	defer rows.Close()
