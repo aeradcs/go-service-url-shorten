@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -115,13 +116,8 @@ func TestShortenUrlAPI(t *testing.T) {
 			if err != nil {
 				t.Fatalf("failed to read response body: %v", err)
 			}
-
-			if resp.StatusCode != test.responseCode {
-				t.Errorf("expected status %v, got %v instead", test.responseCode, resp.StatusCode)
-			}
-			if string(body) != test.responseBody {
-				t.Errorf("expected response body <%s>, got %s instead", test.responseBody, string(body))
-			}
+			assert.Equal(t, resp.StatusCode, test.responseCode)
+			assert.Equal(t, string(body), test.responseBody)
 		})
 	}
 }
