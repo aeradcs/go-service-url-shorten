@@ -50,3 +50,17 @@ func (p *PostgresUrlRepository) SaveUrl(original, shortKey string) (string, erro
 	}
 	return shortUrl, nil
 }
+
+func (p *PostgresUrlRepository) GetOriginalUrl(short string) (string, error) {
+	short = "http://localhost:8080/" + short
+	query := "SELECT url_original FROM urls WHERE url_shortened = $1"
+	var originalUrl string
+	err := p.Db.QueryRow(query, short).Scan(&originalUrl)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", errors.New("url not found")
+		}
+		return "", err
+	}
+	return originalUrl, nil
+}

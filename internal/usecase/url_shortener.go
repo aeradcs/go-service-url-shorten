@@ -7,6 +7,7 @@ import (
 type UrlRepository interface {
 	GetShortUrl(original string) (string, error)
 	SaveUrl(original, shortKey string) (string, error)
+	GetOriginalUrl(short string) (string, error)
 }
 
 type UrlShortenerUseCase struct {
@@ -28,4 +29,8 @@ func (u *UrlShortenerUseCase) ShortenUrl(original string) (string, error) {
 		return "", err
 	}
 	return shortUrl, nil
+}
+
+func (u *UrlShortenerUseCase) GerOriginalUrl(short string) (string, error) {
+	return u.Repo.GetOriginalUrl(short)
 }

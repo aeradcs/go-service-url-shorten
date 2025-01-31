@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
@@ -27,11 +28,12 @@ func main() {
 	useCase := &usecase.UrlShortenerUseCase{Repo: repo}
 	handler := &handler.HttpHandler{UseCase: useCase}
 
-	mux := http.NewServeMux()
-	mux.HandleFunc(`/`, handler.PostReduceUrl)
+	router := mux.NewRouter()
+	router.HandleFunc(`/{url_short}`, handler.GerOriginalUrl)
+	router.HandleFunc(`/`, handler.PostReduceUrl)
 
 	fmt.Println("Server is running on :8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	if err := http.ListenAndServe(":8080", router); err != nil {
 		panic(err)
 	}
 }
