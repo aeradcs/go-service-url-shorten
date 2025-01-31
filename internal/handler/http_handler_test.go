@@ -17,8 +17,6 @@ type mockUrlRepository struct{}
 
 func (m *mockUrlRepository) GetShortUrl(original string) (string, error) {
 	if original == "http://example.com" {
-		fmt.Println("+++++++++++++++ for orig ", original, " return short http://localhost:8080/abcd123")
-
 		return "http://localhost:8080/abcd123", nil
 	}
 	return "", errors.New("url not found")
@@ -26,8 +24,6 @@ func (m *mockUrlRepository) GetShortUrl(original string) (string, error) {
 
 func (m *mockUrlRepository) SaveUrl(original, shortKey string) (string, error) {
 	if original == "http://example.com" {
-		fmt.Println("+++++++++++++++ for orig ", original, " save and return short http://localhost:8080/abcd123")
-
 		return "http://localhost:8080/abcd123", nil
 	}
 	return "", errors.New("error saving URL")
@@ -35,8 +31,6 @@ func (m *mockUrlRepository) SaveUrl(original, shortKey string) (string, error) {
 
 func (m *mockUrlRepository) GetOriginalUrl(short string) (string, error) {
 	if short == "abcd123" {
-		fmt.Println("+++++++++++++++ for short ", short, " return orig http://example.com")
-
 		return "http://example.com", nil
 	}
 	return "", errors.New("url not found")
