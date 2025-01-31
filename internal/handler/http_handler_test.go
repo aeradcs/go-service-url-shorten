@@ -35,7 +35,7 @@ func (m *mockUrlRepository) GetOriginalUrl(short string) (string, error) {
 	return "", errors.New("url not found")
 }
 
-func TestPostReduceUrl(t *testing.T) {
+func TestShortenUrlAPI(t *testing.T) {
 	tests := []struct {
 		name         string
 		handlerFunc  func(*HttpHandler) http.HandlerFunc
@@ -107,7 +107,6 @@ func TestPostReduceUrl(t *testing.T) {
 
 			req := httptest.NewRequest(test.method, test.url, strings.NewReader(test.body))
 			w := httptest.NewRecorder()
-
 			router.ServeHTTP(w, req)
 			resp := w.Result()
 			defer resp.Body.Close()
