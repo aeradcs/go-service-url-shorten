@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"github.com/example-module/url-shortener/config"
 	"os"
 	"strings"
 )
@@ -40,7 +41,7 @@ func (p *PostgresUrlRepository) GetShortUrl(original string) (string, error) {
 
 func (p *PostgresUrlRepository) SaveUrl(original, shortKey string) (string, error) {
 	query := "INSERT INTO urls (url_original, url_shortened) VALUES ($1, $2)"
-	shortUrl := "http://localhost:8080/" + shortKey
+	shortUrl := *config.BaseUrl + shortKey
 	_, err := p.Db.Exec(query, original, shortUrl)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key value") {
@@ -52,7 +53,7 @@ func (p *PostgresUrlRepository) SaveUrl(original, shortKey string) (string, erro
 }
 
 func (p *PostgresUrlRepository) GetOriginalUrl(short string) (string, error) {
-	short = "http://localhost:8080/" + short
+	short = *config.BaseUrl + short
 	query := "SELECT url_original FROM urls WHERE url_shortened = $1"
 	var originalUrl string
 	err := p.Db.QueryRow(query, short).Scan(&originalUrl)

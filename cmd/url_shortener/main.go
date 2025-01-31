@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"github.com/example-module/url-shortener/config"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
@@ -14,6 +16,9 @@ import (
 )
 
 func main() {
+	flag.Parse()
+	fmt.Printf("Parsed args : a = %s, b = %s\n", *config.Port, *config.BaseUrl)
+
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -32,8 +37,8 @@ func main() {
 	router.HandleFunc(`/{url_short}`, handler.GerOriginalUrl)
 	router.HandleFunc(`/`, handler.PostReduceUrl)
 
-	fmt.Println("Server is running on :8080")
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	fmt.Printf("Server is running on :%s\n", *config.Port)
+	if err := http.ListenAndServe(":"+*config.Port, router); err != nil {
 		panic(err)
 	}
 }

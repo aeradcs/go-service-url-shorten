@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"github.com/example-module/url-shortener/config"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -17,14 +18,14 @@ type mockUrlRepository struct{}
 
 func (m *mockUrlRepository) GetShortUrl(original string) (string, error) {
 	if original == "http://example.com" {
-		return "http://localhost:8080/abcd123", nil
+		return *config.BaseUrl + "abcd123", nil
 	}
 	return "", errors.New("url not found")
 }
 
 func (m *mockUrlRepository) SaveUrl(original, shortKey string) (string, error) {
 	if original == "http://example.com" {
-		return "http://localhost:8080/abcd123", nil
+		return *config.BaseUrl + "abcd123", nil
 	}
 	return "", errors.New("error saving URL")
 }
@@ -55,7 +56,7 @@ func TestShortenUrlAPI(t *testing.T) {
 			url:          "/",
 			body:         "http://example.com",
 			responseCode: http.StatusOK,
-			responseBody: "http://localhost:8080/abcd123",
+			responseBody: *config.BaseUrl + "abcd123",
 		},
 		{
 			name:         "Post Reduce Url Method Not Allowed",
