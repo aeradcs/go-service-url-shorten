@@ -31,7 +31,7 @@ func (h *HttpHandler) PostReduceUrl(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response := fmt.Sprintf("%s\n%s", urlOriginal, urlShort)
+	response := fmt.Sprint(urlShort)
 	w.Write([]byte(response))
 }
 
@@ -41,7 +41,11 @@ func (h *HttpHandler) GerOriginalUrl(writer http.ResponseWriter, request *http.R
 		return
 	}
 	urlShort := mux.Vars(request)["url_short"]
+	fmt.Println("+++++++++++++++", request.URL)
+	fmt.Println("+++++++++++++++", mux.Vars(request))
+	fmt.Println("+++++++++++++++", urlShort)
 	urlOriginal, err := h.UseCase.GerOriginalUrl(urlShort)
+	fmt.Println("+++++++++++++++", urlOriginal)
 	if err != nil {
 		if err.Error() == "url not found" {
 			http.Error(writer, err.Error(), http.StatusNotFound)
